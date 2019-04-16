@@ -1,34 +1,41 @@
 #include <Servo.h>  // servo motor kütüphanesi eklendi
 
 Servo servomotor;  // servo motor tanımlanıyor.
-int trigPin = 7;   // 7. pine t
-int echoPin = 6;
-int zaman ;
-int uzaklik;
+const int trigPin = 7;   // 7. pini integer olarak atadık.
+const int echoPin = 6;   // 6. pini integer olarak atadık.
+int zaman ;          // zaman adında integer atadık.
+int uzaklik;         // uzaklık adında integer atadık.
 
 void setup()
 {
- pinMode (trigPin, OUTPUT);
- pinMode (echoPin,INPUT);
- servomotor.attach(10);
+ pinMode (trigPin, OUTPUT); //7. pini çıkış olarak atadık.
+ pinMode (echoPin,INPUT);  //6. pini giriş olarak atadık.
+ servomotor.attach(9);     //servonun alacağı sinyali  9. pine atadık.
 }
 
 void loop() 
 {
-  digitalWrite (trigPin, HIGH);
+  digitalWrite (trigPin, HIGH); //mesafe sensöründen değer almamızı sağlar
   delay(1000);
-  digitalWrite (echoPin,LOW);
-  zaman=pulseIn(echoPin,HIGH);
-  uzaklik=(zaman/2)/29.1;
-  if(uzaklik<=3)
+  digitalWrite (echoPin,LOW); //mesafe sensöründen değer almamızı sağlar
+  zaman=pulseIn(echoPin,HIGH); // zaman değişkenini echopinin high sinyalinden alıyoruz
+  uzaklik=(zaman/2)/29.1;     //uzaklığı zamana göre tanımlıyoruz
+  
+   servomotor.write(0); //servo motor en başta derecede
+   delay(1000);  //1 saniye bekleme
+   
+  if(uzaklik=>6) // uzaklık 6'dan büykse
 
 { 
-  servomotor.write(60);
- delay (2000);
+  servomotor.write(90); // motor 90 dereceye gitsin
+ delay (1000); //1 saniye bekleme
+ 
+} 
+else  //diğer durumlarda
+{
+
+    servomotor.write(0); //motor0 dereceye gitsin
+  
+   
 }
- else 
-  { servomotor.write(90); 
-  
-  
-  }
 }
