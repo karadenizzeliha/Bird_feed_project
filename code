@@ -1,26 +1,45 @@
-int trigPin = 4; // trigpin olarak 4. pin kullanılacak
-int echoPin = 3; //echopin olarak 3. pin kullanılacak
+#include <Servo.h>  // servo motor kütüphanesi eklendi
+//içerisindeki yemin az olup olmadığının kontrol edildiği kısımdaki tanımlamalar.
+Servo servomotor;  // servo motor tanımlanıyor.
+const int trigPin = 7;   // 7. pini integer olarak atadık.
+const int echoPin = 6;   // 6. pini integer olarak atadık.
+int zaman ;          // zaman adında integer atadık.
+int uzaklik;         // uzaklık adında integer atadık.
+//içerisindeki yemin üzerindeki artıkların uzaklaştırılması için olan tanımlamalar.
+int trigPin2 = 4; // trigpin olarak 4. pin kullanılacak
+int echoPin2 = 3; //echopin olarak 3. pin kullanılacak
 int zaman2;  //zaman2 değişkeni tanımlandı.
 int uzaklik2; //uzaklık2 değişkeni tanımlandı.
 
 void setup() {
-  pinMode (trigPin, OUTPUT);//trigPin çıkış olarak atandı.
-  pinMode (echoPin, INPUT);//echoPin giriş olarak atandı.
+// yemin az olması durumu algılayacak giriş ve çıkışlar tanımlanıyor.
+  pinMode (trigPin, OUTPUT); //7. pini çıkış olarak atadık.
+  pinMode (echoPin,INPUT);  //6. pini giriş olarak atadık.
+  servomotor.attach(9);     //servonun alacağı sinyali  9. pine atadık.
+// yemin üzerindeki artıkları algılayacak giriş ve çıkışlar tanımlanıyor.
+  pinMode (trigPin2, OUTPUT);//trigPin çıkış olarak atandı.
+  pinMode (echoPin2, INPUT);//echoPin giriş olarak atandı.
   pinMode (13, OUTPUT); // sensörün vereceğe bilgiye göre fana çıkış verir.
-  
-
 }
-
 void loop() {  //void loop içerisindeki kodları devamlı döndüren bir metoddur.Bu yüzden veri gönderimi LOW-HIGH-LOW şeklinde yaptık.
-  digitalWrite(trigPin, LOW);//mesafe sensöründen değer almamızı sağlar
+ 
+  //fanın çalışması durumundaki
+  digitalWrite(trigPin2, LOW);//mesafe sensöründen değer almamızı sağlar
   delayMicroseconds(10);
-  digitalWrite(trigPin, HIGH); //trig kısımı 10 ms 'de bir tetiklenip ultrosonik ses gönderdiği için gecikmeli bir şekilde yazdık.
+  digitalWrite(trigPin2, HIGH); //trig kısımı 10 ms 'de bir tetiklenip ultrosonik ses gönderdiği için gecikmeli bir şekilde yazdık.
   delayMicroseconds (10);
-  digitalWrite(trigPin, LOW);
-  zaman2 = pulseIn(echoPin, HIGH); //trigten gönderileler echopinden algılanacak ve algılanan değer zaman2 değerine atanacak.
+  digitalWrite(trigPin2, LOW);
+  zaman2 = pulseIn(echoPin2, HIGH); //trigten gönderileler echopinden algılanacak ve algılanan değer zaman2 değerine atanacak.
   uzaklik2 =( zaman2/2) / 29.1;
+  
+  digitalWrite (trigPin, HIGH); //mesafe sensöründen değer almamızı sağlar
+  delay(1000);
+  digitalWrite (echoPin,LOW); //mesafe sensöründen değer almamızı sağlar
+  zaman=pulseIn(echoPin,HIGH); // zaman değişkenini echopinin high sinyalinden alıyoruz
+  uzaklik=(zaman/2)/29.1;     //uzaklığı zamana göre tanımlıyoruz
 
-  if ( uzaklik2  > 0 &&  uzaklik2  < 3) // kuş yemlikten yem yediği  durumununda kuşu algılayacak 
+  //fanın çalışması için
+  if ( uzaklik2  > 0 &&  uzaklik2  <= 3) // kuş yemlikten yem yediği  durumununda kuşu algılayacak 
   {
    delay(30000); //30 sn'ye bekleyecek.
    digitalWrite(13, HIGH); // fana enerji verilecek
@@ -31,5 +50,23 @@ void loop() {  //void loop içerisindeki kodları devamlı döndüren bir metodd
   {
     digitalWrite(13, LOW); //fan tetiklenmeyecek
   }
+
+  //servo motorun  çalışması için
+  servomotor.write(0); //servo motor en başta 0 derecede
+  
+   if(uzaklik>6) // uzaklık 6'dan büyükse
+
+{ 
+  servomotor.write(90); // motor 90 dereceye gitsin
+ delay (1000); //1 saniye bekleme
+ 
+} 
+else  //diğer durumlarda
+{
+
+    servomotor.write(0); //motor0 dereceye gitsin
+  delay(1000); // 1 saniye bekleme
+   
+}
   
 }
